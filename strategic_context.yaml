@@ -1,0 +1,622 @@
+project_strategy:
+  vision:
+    short_term: "Створити високоефективного торгового бота для Solana з фокусом на нові токени"
+    long_term: "Досягти 1M з 20k через автоматизовану торгівлю на Solana"
+    timeframe: "2024-2025"
+
+  core_objectives:
+    trading:
+      goal: "Автоматизована торгівля новими токенами на Solana"
+      priorities:
+        - "Швидкість входу в нові токени"
+        - "Аналіз гаманців ранніх інвесторів"
+        - "Моніторинг соціальних сигналів"
+      metrics:
+        response_time: "оптимальна швидкість без жорстких обмежень"
+        success_rate: "> 95%"
+        target_mcap: "< 100k$"
+        position_sizing:
+          initial: "5-10% від портфоліо"
+          scaling: "подвоєння на кожні 2x прибутку"
+      infrastructure:
+        rpc_providers:
+          primary: "Quicknode Premium"
+          backup: "Chainstack"
+          priority: "Використання тільки платних RPC"
+        external_services:
+          - name: "Birdeye API"
+            purpose: "Швидкі дані по токенах"
+            current_plan: "Free"
+            limits:
+              requests_per_second: 1
+              upgrade_triggers:
+                - "Досягнення ліміту запитів"
+                - "Потреба в історичних даних"
+            monitoring:
+              enabled: true
+              alert_threshold: 80  # відсоток від ліміту
+          - name: "Jupiter API"
+            purpose: "Оптимізація виконання"
+            current_plan: "Free"
+            limits:
+              requests_per_minute: 50
+          - name: "Quicknode"
+            purpose: "Основне джерело даних"
+            current_plan: "Premium $10"
+          - name: "Solscan Pro API"
+            purpose: "Розширена аналітика"
+          - name: "Dune Analytics"
+            purpose: "Аналіз тенденцій"
+        data_priority:
+          primary: "Дані з блокчейну"
+          secondary: "Сторонні сервіси тільки як доповнення"
+        transaction_strategy:
+          gas_policy: "Високі комісії для гарантованого виконання"
+          compute_units: "Максимальний пріоритет"
+
+    risk_management:
+      goal: "Збереження капіталу при максимізації прибутку"
+      features:
+        - "Автоматичний вихід по рівнях"
+        - "Аналіз ліквідності"
+        - "Перевірка контрактів"
+      parameters:
+        initial_position: 0.2  # 20% від портфоліо на старті
+        max_position_size: 2.0 # SOL
+        min_liquidity: 1000   # SOL
+        profit_targets:
+          - level: 2x
+            sell_percent: 50
+          - level: 5x
+            sell_percent: 30
+          - level: 10x
+            sell_percent: 20
+
+  development_phases:
+    mvp:
+      version: "0.1"
+      timeframe: "1-2 місяці"
+      capital_target: "100-500$"
+      trading_parameters:
+        entry:
+          portfolio_percentage: 5
+          max_position_size: 5  # в SOL
+          market_cap_limits:
+            min: 10000
+            max: 200000
+          position_limit: 
+            max_percent_of_fdv: 5
+          max_positions: 15
+          position_scaling:
+            initial: 15
+            explanation: "Оптимальна кількість для відлагодження системи"
+          execution:
+            gas_strategy: "Високі комісії для пріоритетного виконання"
+            rpc: "Quicknode Premium"
+          
+        exit:
+          take_profits:
+            - level: 100
+              size: 20
+            - level: 250
+              size: 20
+            - level: 500
+              size: 20
+            - level: 1000
+              size: 20
+            - level: 3000
+              size: 25
+            - level: 9000
+              size: 50
+          stop_loss:
+            level: -75
+            
+      execution:
+        priority: "maximum_speed"
+        retry_policy:
+          exchange_connection:
+            attempts: 10
+          order_execution:
+            attempts: 3
+            
+      monitoring:
+        data_sources:
+          - type: "blockchain"
+          - type: "database"
+        wallet_monitoring:
+          features:
+            - "Аналіз ранніх інвесторів"
+            - "Відслідковування великих гаманців"
+            - "Патерни покупок/продажів"
+            
+        notifications:
+          channels:
+            - platform: "telegram"
+              types:
+                - entries
+                - exits
+                - errors
+                - system_status
+                
+      control_interface:
+        telegram_bot:
+          features:
+            - system_control  # on/off
+            - entry_percentage_adjustment
+            - channel_management
+            - position_view
+          
+      security:
+        authentication:
+          - api_key_encryption
+        monitoring:
+          - transaction_verification
+          - error_detection
+        backup:
+          frequency: "daily"
+
+    optimization:
+      name: "Оптимізація"
+      timeframe: "2-3 місяці"
+      goals:
+        - "Покращення аналізу контрактів"
+        - "Інтеграція з соціальними сигналами"
+        - "Розширення стратегій виходу"
+        - "Збільшення кількості позицій до 25"
+      target: "Зростання до 50k$"
+      position_scaling:
+        target: 25
+        explanation: "Розширення після стабілізації системи"
+
+    scaling:
+      name: "Масштабування"
+      timeframe: "3-4 місяці"
+      goals:
+        - "Мульти-гаманцева система"
+        - "Розширений аналіз ліквідності"
+        - "Автоматична адаптація до ринку"
+        - "Масштабування до 40 позицій"
+      target: "Зростання до 200k$"
+      position_scaling:
+        target: 40
+        explanation: "Максимальна диверсифікація після повної оптимізації"
+          
+    final:
+      version: "1.0"
+      timeframe: "4-6 місяців"
+      capital_target: "1M$"
+      goals:
+        - "Повна автоматизація"
+        - "Машинне навчання для аналізу патернів"
+        - "Розширена система ризик-менеджменту"
+      trading_parameters:
+        entry:
+          portfolio_percentage: 5  # можливість зміни до 10%
+          max_position_size: 5  # в SOL
+          market_cap_limits:
+            min: 10000
+            max: 200000
+          position_limit: 
+            max_percent_of_fdv: 5
+          max_positions: 40
+          advanced_features:
+            - dynamic_entry_sizing
+            - multi_token_correlation
+            - risk_based_allocation
+          
+        exit:
+          take_profits:
+            - level: 100
+              size: 20
+            - level: 250
+              size: 20
+            - level: 500
+              size: 20
+            - level: 1000
+              size: 20
+            - level: 3000
+              size: 25
+            - level: 9000
+              size: 50
+          stop_loss:
+            level: -75
+          advanced_features:
+            - dynamic_tp_adjustment
+            - trailing_stops
+            - volume_based_exits
+            
+      execution:
+        priority: "maximum_speed"
+        gas_strategy:
+          use_bribing: true
+          dynamic_adjustment: true
+        retry_policy:
+          exchange_connection:
+            attempts: 10
+            delay: "minimal"
+          liquidity_check:
+            attempts: 5
+            delay: "minimal"
+          order_execution:
+            attempts: 3
+            delay: "minimal"
+            
+      monitoring:
+        data_sources:
+          - type: "blockchain"
+            priority: "primary_truth"
+          - type: "database"
+            priority: "secondary"
+          - type: "market_data"
+            priority: "supplementary"
+        wallet_monitoring:
+          features:
+            - "Розширений аналіз ранніх інвесторів"
+            - "Предиктивна аналітика гаманців"
+            - "Кластерний аналіз поведінки"
+            - "Відслідковування пов'язаних гаманців"
+            
+        notifications:
+          channels:
+            - platform: "telegram"
+              types:
+                - entries
+                - exits
+                - errors
+                - portfolio_updates
+                - system_status
+                - performance_alerts
+                - risk_warnings
+                
+      analytics:
+        metrics:
+          portfolio:
+            - total_value
+            - roi
+            - win_rate
+            - average_profit
+            - drawdown
+          positions:
+            - current_pnl
+            - holding_time
+            - exit_efficiency
+          channels:
+            - success_rate
+            - average_return
+            - signal_quality
+            
+        timeframes:
+          - daily
+          - weekly
+          - monthly
+          - all_time
+          
+        visualizations:
+          - performance_chart
+          - token_distribution
+          - order_analysis
+          - channel_performance
+          
+        export:
+          format: "csv"
+          
+      control_interface:
+        telegram_bot:
+          features:
+            - system_control
+            - parameter_adjustment
+            - position_management
+            - analytics_view
+            - risk_management
+          adjustable_parameters:
+            - bot_status
+            - entry_percentage
+            - channel_sources
+            - take_profit_levels
+            - stop_loss_levels
+            
+        web_interface:
+          features:
+            - detailed_analytics
+            - system_settings
+            - user_management
+            - logging_system
+            - strategy_backtesting
+            - performance_analysis
+            
+      future_integrations:
+        social_sentiment:
+          platforms:
+            - twitter
+            - reddit
+            - telegram
+            - youtube
+          analysis_types:
+            - trend_detection
+            - sentiment_analysis
+            - volume_analysis
+            
+        ai_integration:
+          features:
+            - price_prediction
+            - sentiment_analysis
+            - pattern_recognition
+            
+        networks:
+          current: "solana"
+          planned:
+            - ethereum
+            - base
+            
+      security:
+        authentication:
+          - two_factor
+          - api_key_encryption
+          - session_management
+          - ip_whitelist
+        monitoring:
+          - transaction_verification
+          - error_detection
+          - system_health
+          - anomaly_detection
+          - ddos_protection
+        backup:
+          frequency: "daily"
+          type: "full_system"
+          redundancy: true
+      wallet_analysis_service:
+        features:
+          - "Повний скан всіх холдерів"
+          - "Аналіз поведінкових патернів"
+          - "Кластеризація гаманців"
+          - "Предиктивна аналітика"
+          - "Відслідковування пов'язаних гаманців"
+        data_sources:
+          primary: "Блокчейн-дані"
+          secondary: "Агреговані метрики"
+        analysis_types:
+          - "Історичні патерни торгівлі"
+          - "Взаємозв'язки між гаманцями"
+          - "Профілювання поведінки"
+          - "Визначення інсайдерів"
+
+  monitoring:
+    key_metrics:
+      - "Час від появи токена до входу"
+      - "Відсоток успішних входів"
+      - "ROI по кожній позиції"
+      - "Аналіз гаманців ранніх покупців"
+    alerts:
+      - "Нові токени з високим потенціалом"
+      - "Активність відо��их гаманців"
+      - "Ризики ліквідності"
+      - "Зміни в наративах ринку"
+
+  version_history:
+    current: "1.0.0"
+    last_updated: "2024-01-14"
+    major_changes:
+      - "Об'єднано візійні елементи з технічними специфікаціями"
+      - "Розширено систему моніторингу гаманців"
+      - "Додано детальні метрики продуктивності"
+      - "Оновлено фазовий план розвитку"
+
+  project_progress:
+    current_phase: "MVP Development"
+    last_updated: "2024-01-14"
+    
+    completed_tasks:
+      infrastructure:
+        - name: "Базова структура проекту"
+          status: "DONE"
+          details: "Створено основні модулі та файли проекту"
+        
+        - name: "Налаштування віртуального середовища"
+          status: "DONE"
+          details: "Створено та налаштовано venv з усіма залежностями"
+        
+        - name: "Конфігурація логування"
+          status: "DONE"
+          details: "Налаштовано систему логування з ротацією файлів"
+      
+      api_integration:
+        - name: "Quicknode API"
+          status: "DONE"
+          details: "Реалізовано базові методи для роботи з блокчейном"
+          
+        - name: "Jupiter API"
+          status: "DONE"
+          details: "Реалізовано методи для свопів та отримання цін"
+          features:
+            - "Перевірка ліквідності"
+            - "Виконання свопів"
+            - "Отримання цін в USDC та SOL"
+            - "Симуляція транзакцій"
+        
+        - name: "Telegram інтеграція"
+          status: "DONE"
+          details: "Базова інтеграція з Telegram API"
+      
+      database:
+        - name: "Структура бази даних"
+          status: "DONE"
+          details: "Створено основні таблиці та методи роботи з ними"
+        
+        - name: "Міграції"
+          status: "DONE"
+          details: "Реалізовано автоматичне створення таблиць"
+    
+    in_progress:
+      trading:
+        - name: "Обробка торгових сигналів"
+          status: "IN_PROGRESS"
+          details: "Реалізація логіки обробки сигналів з каналів"
+          remaining:
+            - "Додати фільтрацію спаму"
+            - "Покращити розпізнавання адрес"
+        
+        - name: "Система управління позиціями"
+          status: "IN_PROGRESS"
+          details: "Реалізація відкриття/закриття позицій"
+          remaining:
+            - "Додати динамічні take-profit рівні"
+            - "Реалізувати trailing stop"
+      
+      monitoring:
+        - name: "Моніторинг гаманців"
+          status: "IN_PROGRESS"
+          details: "Відслідковування активності ключових гаманців"
+          remaining:
+            - "Додати аналіз патернів"
+            - "Реалізувати кластеризацію"
+    
+    pending_tasks:
+      optimization:
+        - name: "Оптимізація виконання"
+          priority: "HIGH"
+          details: "Покращення швидкодії та надійності"
+          subtasks:
+            - "Оптимізація запитів до API"
+            - "Кешування даних"
+            - "Паралельна обробка сигналів"
+        
+        - name: "Тестування навантаження"
+          priority: "MEDIUM"
+          details: "Стрес-тести та оптимізація"
+          
+      analytics:
+        - name: "Система аналітики"
+          priority: "MEDIUM"
+          details: "Розробка системи аналізу результатів"
+          subtasks:
+            - "Статистика по угодах"
+            - "Аналіз прибутковості"
+            - "Звіти по каналах"
+      
+      security:
+        - name: "Покращення безпеки"
+          priority: "HIGH"
+          details: "Додаткові заходи безпеки"
+          subtasks:
+            - "Двофакторна автентифікація"
+            - "Шифрування критичних даних"
+            - "Аудит безпеки"
+    
+    next_steps:
+      - "Завершити обробку торгових сигналів"
+      - "Покращити моніторинг гаманців"
+      - "Почати роботу над оптимізацією"
+      - "Підготувати тестове середовище"
+    
+    risks:
+      - name: "API обмеження"
+        severity: "MEDIUM"
+        mitigation: "Реалізувати чергу запитів та кешування"
+      
+      - name: "Помилки парсингу"
+        severity: "HIGH"
+        mitigation: "Додати додаткові перевірки та валідацію"
+      
+      - name: "Затримки виконання"
+        severity: "HIGH"
+        mitigation: "Оптимізувати роботу з API та додати паралельну обробку"
+
+  development_rules:
+    workspace:
+      path: "telegram_trading_bot"
+      principles:
+        - "Завжди працюємо в існуючому віртуальному просторі"
+        - "Перевіряємо наявність файлів перед створенням нових"
+        - "Уникаємо дублювання коду та файлів"
+        - "Інтегруємося з існуючим кодом"
+    
+    development_approach:
+      - "Покроковий розвиток кожного компонента"
+      - "Тестування після кожного значного оновлення"
+      - "Документування змін в коді"
+      - "Перевірка сумісності з існуючими компонентами"
+
+    existing_files:
+      - "main.py"
+      - "config.py"
+      - "database.py"
+      - "trading.py"
+      - "message_parser.py"
+      - "monitoring/api_limits.py"
+
+    code_management:
+      - rule: "Перевірка змін після модифікацій"
+        description: "Після кожної зміни в коді або файлах проекту обов'язково перевіряти чи зміни відбулись та чи коректно застосовані"
+        steps:
+          - "Перевірка структури файлів після створення/видалення"
+          - "Перевірка вмісту файлів після модифікації"
+          - "Перевірка працездатності коду після змін"
+
+  development_principles:
+    core_practices:
+      - name: "Перевірка змін"
+        description: "Після кожної зміни в проекті обов'язково перевіряти, чи вона відбулась коректно"
+        importance: "critical"
+      
+      - name: "Рефлексія"
+        description: "Аналізувати оптимальність змін відносно стратегі��ного контексту"
+        steps:
+          - "Оцінка відповідності змін стратегічним цілям"
+          - "Перевірка ефективності реалізації"
+          - "Аналіз можливих покращень"
+      
+      - name: "Комунікація"
+        description: "Детальне пояснення всіх дій та їх відповідності цілям проекту"
+        requirements:
+          - "Пояснювати що робиться"
+          - "Пояснювати для чого це робиться"
+          - "Показувати зв'язок зі стратегічними цілями"
+      
+      - name: "Обробка помилок"
+        description: "Прозоре повідомлення про всі виявлені помилки"
+        actions:
+          - "Негайне інформування про помилки"
+          - "Детальний опис проблеми"
+          - "Пропозиції щодо виправлення"
+      
+      - name: "Довіра до існуючих API"
+        description: "Використовувати та довіряти існуючим API замість реімплементації їх функціональності"
+        rationale: "Зовнішні API часто добре протестовані, оптимізовані та підтримуються спільнотою"
+        examples:
+          - "Використання готових методів Jupiter API для створення транзакцій"
+          - "Довіра до обробки блокчейн-специфічних деталей зовнішніми бібліотеками"
+
+      - name: "Простота перед складністю"
+        description: "Обирати простіші рішення, які легше зрозуміти, тестувати та підтримувати"
+        rationale: "Складні рішення збільшують ризик помилок та ускладнюють підтримку"
+        examples:
+          - "Мінімізація ручної обробки низькорівневих деталей транзакцій"
+          - "Використання високорівневих абстракцій"
+
+      - name: "Ефективне тестування"
+        description: "Починати з простих тестів на реальних даних"
+        rationale: "Реальні тести з малими сумами дають більше впевненості"
+        examples:
+          - "Тестування торгови�� операцій з мінімальними сумами"
+          - "Верифікація транзакцій через blockchain explorer"
+
+      - name: "Безпека та надійність"
+        description: "Забезпечити безпечну обробку коштів та надійність операцій"
+        rationale: "При роботі з криптовалютами безпека є критично важливою"
+        examples:
+          - "Перевірка балансів перед виконанням транзакцій"
+          - "Використання перевірених бібліотек"
+          - "Обмеження максимальних сум"
+    
+    implementation:
+      frequency: "Після кожної зміни"
+      scope: "Всі етапи проекту"
+      priority: "Висока"
+      
+    success_metrics:
+      - "Відсутність непоміченних помилок"
+      - "Чітке розуміння всіх змін та їх наслідків"
+      - "Відповідність змін стратегічним цілям"
+      - "Ефективна комунікація між учасниками проекту"
+      - "Мінімальна складність реалізації"
+      - "Висока надійність операцій"
