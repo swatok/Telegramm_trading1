@@ -3,6 +3,7 @@
 """
 
 import re
+import os
 from datetime import datetime
 from decimal import Decimal
 from typing import Optional
@@ -17,6 +18,11 @@ class MessageParser:
         self.address_pattern = r'([A-HJ-NP-Za-km-z1-9]{32,44})'  # Шаблон для Solana адрес
         self.price_pattern = r'(\d+\.?\d*)\s*(SOL|USDC|USD)'
         
+        # Налаштування торгівлі
+        self.default_amount = Decimal(os.getenv('INITIAL_POSITION_PERCENT', '20')) / 100  # Відсоток від балансу
+        self.min_amount = Decimal("0.01")  # Мінімальна сума в SOL
+        self.max_amount = Decimal(os.getenv('MAX_POSITION_SIZE_SOL', '2.0'))  # Максимальна сума в SOL
+        
     def parse_message(self, message: str, message_id: int = None, channel_id: int = None) -> Optional[Signal]:
         """Парсинг повідомлення для виявлення Solana контрактів"""
         try:
@@ -25,7 +31,7 @@ class MessageParser:
             # Пошук адреси токена
             address_match = re.search(self.address_pattern, message)
             if not address_match:
-                logger.warning("Адреса то��ена не знайдена в повідомленні")
+                logger.warning("Адреса токена не знайдена в повідомленні")
                 return None
                 
             token_address = address_match.group(1)
@@ -53,7 +59,8 @@ class MessageParser:
                 source_id=str(channel_id) if channel_id else '',
                 message_id=message_id,
                 entry_price=entry_price,
-                amount_sol=Decimal("0.01"),  # Базова кількість для покупки в SOL
+                amount_sol=self.default_amount,  # Використовуємо налаштування з .env
+                slippage=Decimal(os.getenv('MAX_SLIPPAGE_PERCENT', '1.0')) / 100,  # Конвертуємо % в десяткове
                 token=token,
                 confidence_score=Decimal("1.0"),
                 status='new'

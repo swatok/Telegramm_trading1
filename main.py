@@ -27,7 +27,7 @@ class TradingBot:
         self.api_id = int(os.getenv('TELEGRAM_API_ID'))
         self.api_hash = os.getenv('TELEGRAM_API_HASH')
         self.phone = os.getenv('TELEGRAM_PHONE')
-        self.session_name = os.getenv('TELEGRAM_SESSION_NAME', 'user_session')
+        self.session_name = 'telegram_session'  # Фіксована назва сесії
         
         # Отримуємо список каналів
         channels_json = os.getenv('SOURCE_CHANNELS', '["@mad_apes_gambles", "@testttggjb"]')
@@ -87,7 +87,7 @@ class TradingBot:
                 )
                 logger.info("Відправлено повідомлення про запуск")
             except Exception as e:
-                logger.error(f"Помилка відправки повідомлення про запуск: {e}")
+                logger.error(f"Помилка відпр��вки повідомлення про запуск: {e}")
             
             # Ініціалізуємо trading executor
             await self.trading_executor.start(self.client)
@@ -126,10 +126,10 @@ class TradingBot:
                         
                         # Додаємо сигнал в історію каналу
                         channel.add_to_history({
-                            "token": signal.token.to_dict(),
+                            "token": signal.token.to_dict() if signal.token else {"address": signal.token_address},
                             "action": signal.action,
-                            "amount": str(signal.amount),
-                            "confidence": str(signal.confidence)
+                            "amount_sol": str(signal.amount_sol) if signal.amount_sol else "0.1",
+                            "confidence": str(signal.confidence_score)
                         })
                         
                         # Виконуємо торгову операцію
@@ -166,7 +166,7 @@ class TradingBot:
             logger.info("Бот успішно зупинено")
             
         except Exception as e:
-            logger.error(f"Помилка зупинки бота: {e}", exc_info=True)
+            logger.error(f"Помілка зупинки бота: {e}", exc_info=True)
 
 async def main():
     bot = None

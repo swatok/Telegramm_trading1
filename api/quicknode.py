@@ -9,10 +9,12 @@ from loguru import logger
 from solders.keypair import Keypair
 from solders.pubkey import Pubkey
 from decimal import Decimal
+from typing import Optional
 
 class QuicknodeAPI:
     def __init__(self):
         self.endpoint = os.getenv('QUICKNODE_HTTP_URL')
+        self.jupiter_endpoint = 'https://cache.jup.ag/tokens'
         if not self.endpoint:
             raise ValueError("QUICKNODE_HTTP_URL не знайдено в змінних середовища")
             
@@ -27,6 +29,9 @@ class QuicknodeAPI:
         # Створюємо постійний конектор
         self.connector = aiohttp.TCPConnector(ssl=self.ssl_context)
         self.session = aiohttp.ClientSession(connector=self.connector)
+        
+        # Кеш для токенів
+        self.token_cache = {}
         
     async def close(self):
         """Закриття сесії"""
@@ -178,37 +183,153 @@ class QuicknodeAPI:
             logger.error(f"Помилка отримання балансу токена: {e}")
             return 0.0
             
-    async def get_transaction_status(self, signature: str, wait_confirmation: bool = True) -> dict:
-        """Отримання статусу транзакції з очікуванням підтвердження"""
+    async def get_token_info(self, mint_address: str) -> dict:
+        """Отримання інформації про токен через Jupiter API"""
         try:
-            if wait_confirmation:
-                # Чекаємо підтвердження транзакції
-                confirm_result = await self._make_request(
-                    "confirmTransaction",
-                    [signature, {"commitment": "confirmed"}]
-                )
-                if not confirm_result or not confirm_result.get("value", {}).get("value"):
-                    logger.warning(f"Транзакція {signature} не підтверджена")
-                    return {'confirmed': False, 'error': True}
+            # Перевіряємо кеш
+            if mint_address in self.token_cache:
+                return self.token_cache[mint_address]
+                
+            # Отримуємо список сіх токенів
+            async with self.session.get(self.jupiter_endpoint) as response:
+                if response.status != 200:
+                    logger.error(f"Помилка отримання списку токенів: {response.status}")
+                    return None
                     
-            # Отримуємо деталі транзакції
-            result = await self._make_request(
-                "getSignatureStatuses",
-                [[signature]]
+                tokens = await response.json()
+                
+            # Шукаємо потрібний токен
+            token_info = next(
+                (token for token in tokens if token.get('address') == mint_address),
+                None
             )
             
-            if result and "value" in result and result["value"][0]:
-                status = result["value"][0]
-                confirmation_status = status.get('confirmationStatus')
-                return {
-                    'confirmed': confirmation_status == 'confirmed' or confirmation_status == 'finalized',
-                    'error': status.get('err') is not None,
-                    'confirmations': status.get('confirmations'),
-                    'status': confirmation_status
-                }
+            if token_info:
+                # Зберігаємо в кеш
+                self.token_cache[mint_address] = token_info
+                return token_info
                 
-            return {'confirmed': False, 'error': True, 'confirmations': 0, 'status': 'unknown'}
+            return None
             
         except Exception as e:
-            logger.error(f"Помилка отримання статусу транзакції: {e}")
-            return {'confirmed': False, 'error': True, 'confirmations': 0, 'status': 'error'} 
+            logger.error(f"Помилка отримання інформації про токен: {e}")
+            return None
+            
+    async def get_all_tokens(self, owner_address: str = None) -> list:
+        """Отримання всіх токенів на гаманці"""
+        try:
+            if not owner_address:
+                owner_address = os.getenv('SOLANA_PUBLIC_KEY')
+                if not owner_address:
+                    raise ValueError("SOLANA_PUBLIC_KEY не знайдено в змінних середовища")
+                    
+            # Отримуємо всі токен аккаунти
+            result = await self._make_request(
+                "getTokenAccountsByOwner",
+                [
+                    owner_address,
+                    {"programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"},
+                    {"encoding": "jsonParsed"}
+                ]
+            )
+            
+            if not result or "value" not in result:
+                return []
+                
+            tokens = []
+            # Додаємо SOL
+            sol_balance = await self.get_sol_balance(owner_address)
+            tokens.append({
+                "mint": "So11111111111111111111111111111111111111112",
+                "balance": sol_balance,
+                "decimals": 9,
+                "symbol": "SOL",
+                "name": "Solana",
+                "icon": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
+            })
+            
+            # Отримуємо список всіх токенів з Jupiter API
+            async with self.session.get(self.jupiter_endpoint) as response:
+                if response.status == 200:
+                    jupiter_tokens = await response.json()
+                    jupiter_tokens_map = {token['address']: token for token in jupiter_tokens}
+                else:
+                    jupiter_tokens_map = {}
+
+            # Обробляємо кожен токен аккаунт
+            for account in result["value"]:
+                try:
+                    if "account" in account and "data" in account["account"]:
+                        data = account["account"]["data"]
+                        if isinstance(data, dict) and "parsed" in data:
+                            info = data["parsed"]["info"]
+                            mint = info.get("mint")
+                            token_amount = info.get("tokenAmount", {})
+                            amount = Decimal(str(token_amount.get("amount", 0)))
+                            decimals = int(token_amount.get("decimals", 0))
+                            
+                            if amount > 0:
+                                balance = float(amount / Decimal(str(10 ** decimals)))
+                                
+                                # Отримуємо додаткову інформацію з Jupiter API
+                                token_info = jupiter_tokens_map.get(mint, {})
+                                
+                                tokens.append({
+                                    "mint": mint,
+                                    "balance": balance,
+                                    "decimals": decimals,
+                                    "symbol": token_info.get("symbol", "Unknown"),
+                                    "name": token_info.get("name", "Unknown Token"),
+                                    "icon": token_info.get("logoURI", "")
+                                })
+                except Exception as e:
+                    logger.error(f"Помилка обробки токен аккаунта: {e}")
+                    continue
+            
+            return tokens
+            
+        except Exception as e:
+            logger.error(f"Помилка отримання токенів: {e}")
+            return []
+            
+    async def get_transaction_status(self, signature: str) -> Optional[str]:
+        """Отримання статусу транзакції"""
+        try:
+            logger.debug(f"Перевірка статусу транзакції {signature}")
+            
+            # Спочатку пробуємо через getTransaction
+            logger.debug("Спроба через getTransaction...")
+            tx_result = await self._make_request(
+                "getTransaction",
+                [str(signature), {"encoding": "jsonParsed", "maxSupportedTransactionVersion": 0}]
+            )
+            
+            if tx_result:
+                if "meta" in tx_result and tx_result["meta"] is not None:
+                    if tx_result["meta"].get("err") is None:
+                        return "confirmed"
+                    else:
+                        return "failed"
+                        
+            # Якщо не вдалося, пробуємо через getSignatureStatuses
+            logger.debug("Спроба через getSignatureStatuses...")
+            status_result = await self._make_request(
+                "getSignatureStatuses",
+                [[str(signature)]]
+            )
+            
+            if status_result and "value" in status_result:
+                status = status_result["value"][0]
+                if status is None:
+                    return "pending"
+                elif status.get("err") is None:
+                    return "confirmed"
+                else:
+                    return "failed"
+                    
+            logger.warning(f"Не вдалося отримати статус транзакції {signature}")
+            return "pending"
+            
+        except Exception as e:
+            logger.error(f"Помилка отримання статусу транзакції: {str(e)}")
+            return None 

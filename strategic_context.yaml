@@ -16,7 +16,7 @@ project_strategy:
         success_rate: "> 95%"
         target_mcap: "< 100k$"
         position_sizing:
-          initial: "5-10% від портфоліо"
+          initial: "5% від портфоліо"
           scaling: "подвоєння на кожні 2x прибутку"
       infrastructure:
         rpc_providers:
@@ -24,17 +24,6 @@ project_strategy:
           backup: "Chainstack"
           priority: "Використання тільки платних RPC"
         external_services:
-          - name: "Birdeye API"
-            purpose: "Швидкі дані по токенах"
-            current_plan: "Free"
-            limits:
-              requests_per_second: 1
-              upgrade_triggers:
-                - "Досягнення ліміту запитів"
-                - "Потреба в історичних даних"
-            monitoring:
-              enabled: true
-              alert_threshold: 80  # відсоток від ліміту
           - name: "Jupiter API"
             purpose: "Оптимізація виконання"
             current_plan: "Free"
@@ -43,10 +32,6 @@ project_strategy:
           - name: "Quicknode"
             purpose: "Основне джерело даних"
             current_plan: "Premium $10"
-          - name: "Solscan Pro API"
-            purpose: "Розширена аналітика"
-          - name: "Dune Analytics"
-            purpose: "Аналіз тенденцій"
         data_priority:
           primary: "Дані з блокчейну"
           secondary: "Сторонні сервіси тільки як доповнення"
@@ -58,12 +43,10 @@ project_strategy:
       goal: "Збереження капіталу при максимізації прибутку"
       features:
         - "Автоматичний вихід по рівнях"
-        - "Аналіз ліквідності"
         - "Перевірка контрактів"
       parameters:
         initial_position: 0.2  # 20% від портфоліо на старті
         max_position_size: 2.0 # SOL
-        min_liquidity: 1000   # SOL
         profit_targets:
           - level: 2x
             sell_percent: 50

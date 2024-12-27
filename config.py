@@ -1,6 +1,19 @@
 import logging
 import os
 from logging.handlers import RotatingFileHandler
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Telegram конфігурація
+TELEGRAM_API_ID = os.getenv('TELEGRAM_API_ID')
+TELEGRAM_API_HASH = os.getenv('TELEGRAM_API_HASH')
+TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
+TELEGRAM_PHONE = os.getenv('TELEGRAM_PHONE')
+
+# Solana конфігурація
+SOLANA_PRIVATE_KEY = os.getenv('SOLANA_PRIVATE_KEY')
+QUICKNODE_RPC_URL = os.getenv('QUICKNODE_RPC_URL')
 
 def setup_logging():
     # Створюємо директорію для логів якщо її немає
@@ -35,7 +48,7 @@ def setup_logging():
     logger.addHandler(file_handler)
     logger.addHandler(console_handler)
     
-    # Вс��ановлюємо рівень логування для сторонніх бібліотек
+    # Встановлюємо рівень логування для сторонніх бібліотек
     logging.getLogger('telethon').setLevel(logging.WARNING)
     logging.getLogger('asyncio').setLevel(logging.WARNING)
     

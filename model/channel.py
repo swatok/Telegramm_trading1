@@ -30,6 +30,9 @@ class Channel:
     # Історія сигналів
     signal_history: List[Dict] = field(default_factory=list)  # Історія останніх сигналів
     
+    # Помилки
+    errors: List[Dict] = field(default_factory=list)  # Історія помилок
+    
     def __post_init__(self):
         """Валідація після створення"""
         valid_types = {'telegram', 'twitter', 'discord'}
@@ -39,6 +42,9 @@ class Channel:
         valid_statuses = {'active', 'paused', 'disabled'}
         if self.status not in valid_statuses:
             raise ValueError(f"Невірний статус каналу: {self.status}")
+            
+        # Ініціалізуємо список помилок
+        self.errors = []
             
     @property
     def is_active(self) -> bool:
@@ -78,6 +84,18 @@ class Channel:
         if len(self.signal_history) > 100:
             self.signal_history = self.signal_history[-100:]
             
+    def add_error(self, message: str, details: Dict = None):
+        """Додавання помилки"""
+        error = {
+            "message": message,
+            "timestamp": datetime.now(),
+            "details": details or {}
+        }
+        self.errors.append(error)
+        # Обмежуємо кількість збережених помилок
+        if len(self.errors) > 100:
+            self.errors = self.errors[-100:]
+            
     def to_dict(self) -> dict:
         """Конвертація в словник для збереження"""
         return {
@@ -93,7 +111,8 @@ class Channel:
             "failed_signals": self.failed_signals,
             "total_profit": str(self.total_profit),
             "average_profit": str(self.average_profit),
-            "signal_history": self.signal_history
+            "signal_history": self.signal_history,
+            "errors": self.errors
         }
         
     def __str__(self) -> str:
