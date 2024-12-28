@@ -3,7 +3,7 @@
 """
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Any
 from decimal import Decimal
 
 @dataclass
@@ -23,7 +23,7 @@ class BotSession:
     total_profit: Decimal = Decimal("0")  # Загальний прибуток
     total_fees: Decimal = Decimal("0")  # Загальні комісії
     
-    # Помилки та попередженн��
+    # Помилки та попередження
     errors: List[Dict] = field(default_factory=list)  # Список помилок
     warnings: List[Dict] = field(default_factory=list)  # Список попереджень
     
@@ -112,3 +112,14 @@ class BotSession:
             f"BotSession({self.id[:8]}, {self.status}, "
             f"duration={duration}, {profit})"
         ) 
+        
+    @property
+    def is_running(self) -> bool:
+        return self.status == 'running'
+        
+    def add_error(self, error_type: str, details: Dict[str, Any]):
+        self.errors.append({
+            'type': error_type,
+            'details': details,
+            'timestamp': datetime.now()
+        }) 
