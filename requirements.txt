@@ -1,20 +1,20 @@
 # Telegram
-telethon==1.33.1
+python-telegram-bot>=13.7
 
 # Environment
-python-dotenv==1.0.0
+python-dotenv>=0.19.2
 
 # HTTP
-aiohttp==3.9.1
+aiohttp>=3.8.1
 httpx==0.23.0
 
 # Async
-asyncio==3.4.3
+asyncio>=3.4.3
 
 # Testing
-pytest==7.4.3
-pytest-asyncio==0.23.2
-pytest-cov==4.1.0
+pytest>=7.0.1
+pytest-asyncio>=0.18.3
+pytest-cov>=3.0.0
 
 # Database
 psycopg2-binary==2.9.9
@@ -23,7 +23,7 @@ psycopg2-binary==2.9.9
 loguru==0.7.2
 
 # Blockchain
-solana==0.30.2
+solana>=0.30.2
 solders==0.18.0
 base58==2.1.1
 construct==2.10.68
@@ -31,4 +31,19 @@ construct==2.10.68
 # Security
 cryptography==41.0.7
 pydantic==2.5.2
-typing-extensions==4.9.0
+typing-extensions>=4.1.1
+
+# Websockets
+websockets>=10.4
+
+# Requests
+requests>=2.27.1
+
+# Black
+black>=22.3.0
+
+# Mypy
+mypy>=0.950
+
+# Isort
+isort>=5.10.1
