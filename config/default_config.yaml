@@ -1,0 +1,47 @@
+database:
+  host: localhost
+  port: 5432
+  name: trading_db
+  user: postgres
+  password: ""
+  pool:
+    min_size: 10
+    max_size: 20
+  ssl_mode: null
+
+logging:
+  level: INFO
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  dir: logs
+  file_size_mb: 10
+  backup_count: 5
+
+security:
+  jwt_algorithm: HS256
+  jwt_expiration_minutes: 60
+  allowed_ips: ["127.0.0.1"]
+  rate_limit: 100
+  max_request_size_mb: 10
+
+telegram:
+  admin_ids: []
+  notification_types:
+    - entries
+    - exits
+    - errors
+    - system_status
+
+trading:
+  position:
+    max_size: 0.1
+    min_size: 0.01
+  slippage:
+    max: 0.01
+  risk:
+    default_stop_loss: 0.02
+    default_take_profit: 0.04
+
+monitoring:
+  update_interval: 60
+  alert_threshold: 0.05
+  metrics_retention_days: 30 
